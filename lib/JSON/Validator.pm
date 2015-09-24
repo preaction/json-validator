@@ -410,7 +410,12 @@ sub _resolve_ref {
   warn "[JSON::Validator] Resolve $ref ($namespace)\n" if DEBUG;
   $refs->{$ref} = {};
   my $doc = $self->_load_schema($ref, $namespace);
-  my $def = $self->_resolve_schema($doc->get($ref->fragment), $doc->data->{id}, $refs);
+  my $def = $self->_resolve_schema($doc->get($ref->fragment || '/'), $doc->data->{id}, $refs);
+
+  unless ($def) {
+    die "did not point to anything....yet?? not sure if this should be solved inside _resolve_schema() or not";
+  }
+
   delete $def->{id};
   $refs->{$ref}{$_} = $def->{$_} for keys %$def;
   $refs->{$ref};

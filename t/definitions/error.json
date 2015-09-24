@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "error.json",
+  "required": ["message", "path"],
+  "properties": {
+    "errors": {
+      "type": "array",
+      "items": {
+        "message": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    }
+  }
+}

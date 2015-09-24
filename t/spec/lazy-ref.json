@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "entry": { "$ref": "#/definitions/Entry" },
+    "error": { "$ref": "#/definitions/Error" }
+  },
+  "definitions": { "$ref": "../definitions/index.json" }
+}
