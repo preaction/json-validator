@@ -8,9 +8,11 @@ my $validator = JSON::Validator->new;
 $validator->schema(
   {
     id          => 'http://my.site/myschema#',
+    tags        => {'$ref' => 'tags'},
     definitions => {
       schema1 => {id   => 'schema1', type  => 'integer'},
-      schema2 => {type => 'array',   items => {'$ref' => 'schema1'}}
+      schema2 => {type => 'array',   items => {'$ref' => 'schema1'}},
+      tags => ['foo'],
     }
   }
 );
@@ -20,6 +22,8 @@ is_deeply(
   {type => 'array', items => {type => 'integer'}},
   'expanded schema2'
 );
+
+is_deeply($validator->schema->get('/tags'), ['foo'], 'expanded tags');
 
 ok !find_key($validator->schema->data, '$ref'), 'no $ref';
 

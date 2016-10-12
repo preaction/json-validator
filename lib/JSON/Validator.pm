@@ -285,8 +285,18 @@ sub _resolver {
 
     $ref = $look_in->get($ref->fragment || '')
       || die qq[Could not find "$topic->{'$ref'}" ($ref). Typo in schema "$namespace"?];
-    %$topic = %$ref;
-    delete $topic->{id} unless ref $topic->{id};    # TODO: Is this correct?
+
+    if (ref $ref eq 'HASH') {
+      %$topic = %$ref;
+      delete $topic->{id} unless ref $topic->{id};    # TODO: Is this correct?
+    }
+    elsif (ref $ref eq 'ARRAY') {
+      warn Data::Dumper::Dumper($topic, $ref);
+      @$topic = @$ref;
+    }
+    else {
+      $topic = $ref;
+    }
   }
 }
 
