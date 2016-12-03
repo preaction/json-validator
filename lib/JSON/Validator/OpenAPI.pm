@@ -244,15 +244,15 @@ sub _validate_type_object {
 
   for my $p (keys %$properties) {
     next unless $properties->{$p}{readOnly};
-    push @e, JSON::Validator::E("$path/$p", "Read-only.") if exists $data->{$p};
+    push @e, JSON::Validator::E("$path/$p", "Read-only") if exists $data->{$p};
     $ro{$p} = 1;
   }
 
   if ($discriminator and !$self->{inside_discriminator}) {
     my $name = $data->{$discriminator}
-      or return JSON::Validator::E($path, "Discriminator $discriminator has no value.");
+      or return JSON::Validator::E($path, "Discriminator $discriminator has no value");
     my $dschema = $self->{root}->get("/definitions/$name")
-      or return JSON::Validator::E($path, "No definition for discriminator $name.");
+      or return JSON::Validator::E($path, "No definition for discriminator $name");
     local $self->{inside_discriminator} = 1;    # prevent recursion
     return $self->_validate($data, $path, $dschema);
   }

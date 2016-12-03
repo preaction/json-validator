@@ -5,22 +5,22 @@ use JSON::Validator;
 my $validator = JSON::Validator->new->schema({properties => {required => {type => 'boolean'}}});
 
 my @errors = $validator->validate({required => '0'});
-is $errors[0]->{message}, 'Expected boolean - got string.', 'string 0 is not detected as boolean';
+is $errors[0]->{message}, 'Expected boolean - got string', 'string 0 is not detected as boolean';
 
 $validator->coerce(booleans => 1);
 for my $value (!!1, !!0) {
   my @errors = $validator->validate({required => $value});
-  ok !@errors, "boolean ($value). (@errors)";
+  ok !@errors, "boolean ($value) (@errors)";
 }
 
 for my $value (1, '1', '0', '') {
   my @errors = $validator->validate({required => $value});
-  ok @errors, "not boolean ($value). @errors";
+  ok @errors, "not boolean ($value) @errors";
 }
 
 for my $value ('true', 'false') {
   my @errors = $validator->validate({required => $value});
-  ok !@errors, "boolean ($value). (@errors)";
+  ok !@errors, "boolean ($value) (@errors)";
 }
 
 SKIP: {

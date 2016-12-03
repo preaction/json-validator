@@ -16,7 +16,7 @@ is "@errors", "/: anyOf failed: String is too long: 8/5.", "too long";
 is "@errors", "", "number";
 
 @errors = $validator->validate(-1, $schema);
-is "@errors", "/: anyOf failed: -1 < minimum(0)", "negative";
+is "@errors", "/: anyOf failed: -1 < minimum(0).", "negative";
 
 @errors = $validator->validate({}, $schema);
 is "@errors", "/: anyOf failed: Expected string or number, got object.", "object";

@@ -151,9 +151,9 @@ sub _load_schema {
 sub _load_schema_from_data {
   my ($self, $url, $namespace) = @_;
   require Mojo::Loader;
-  my ($module, $file) = $namespace =~ m!^data://([^/]+)/(.*)$! or die "Invalid URL: $namespace.";
+  my ($module, $file) = $namespace =~ m!^data://([^/]+)/(.*)$! or die "Invalid URL: $namespace";
   Mojo::Loader::data_section($module, $file)
-    || die "$file could not be found in __DATA__ section of $module.";
+    || die "$file could not be found in __DATA__ section of $module";
 }
 
 sub _load_schema_from_text {
@@ -315,7 +315,7 @@ sub _validate {
   if (my $rules = $schema->{not}) {
     push @errors, $self->_validate($data, $path, $rules);
     warn "[JSON::Validator] not @{[$path||'/']} == [@errors]\n" if DEBUG == 2;
-    return @errors ? () : (E $path, 'Should not match.');
+    return @errors ? () : (E $path, 'Should not match');
   }
 
   if (my $rules = $schema->{allOf}) {
@@ -345,7 +345,7 @@ sub _validate_all_of {
 
   warn "[JSON::Validator] allOf @{[$path||'/']} == [@errors]\n" if DEBUG == 2;
   my $expected = join ' or ', _uniq(@expected);
-  return E $path, "allOf failed: Expected $expected, not $type."
+  return E $path, "allOf failed: Expected $expected, not $type"
     if $expected and @errors + @expected == @$rules;
   return E $path, sprintf 'allOf failed: %s', _merge_errors(@errors) if @errors;
   return;
@@ -369,7 +369,7 @@ sub _validate_any_of {
 
   warn "[JSON::Validator] anyOf @{[$path||'/']} == [@errors]\n" if DEBUG == 2;
   my $expected = join ' or ', _uniq(@expected);
-  return E $path, "anyOf failed: Expected $expected, got $type." unless @errors;
+  return E $path, "anyOf failed: Expected $expected, got $type" unless @errors;
   return E $path, sprintf "anyOf failed: %s", _merge_errors(@errors);
 }
 
@@ -396,8 +396,8 @@ sub _validate_one_of {
   }
 
   my $expected = join ' or ', _uniq(@expected);
-  return E $path, 'All of the oneOf rules match.' unless @errors + @expected;
-  return E $path, "oneOf failed: Expected $expected, got $type." unless @errors;
+  return E $path, 'All of the oneOf rules match' unless @errors + @expected;
+  return E $path, "oneOf failed: Expected $expected, got $type" unless @errors;
   return E $path, sprintf 'oneOf failed: %s', _merge_errors(@errors);
 }
 
@@ -414,7 +414,7 @@ sub _validate_type_enum {
   }
 
   local $" = ', ';
-  return E $path, "Not in enum list: @$enum.";
+  return E $path, "Not in enum list: @$enum";
 }
 
 sub _validate_format {
@@ -422,7 +422,7 @@ sub _validate_format {
   my $code = $self->formats->{$schema->{format}};
   return if $code and $code->($value);
   return do { warn "Format rule for '$schema->{format}' is missing"; return } unless $code;
-  return E $path, "Does not match $schema->{format} format.";
+  return E $path, "Does not match $schema->{format} format";
 }
 
 sub _validate_type_any { }
@@ -435,16 +435,16 @@ sub _validate_type_array {
     return E $path, _expected(array => $data);
   }
   if (defined $schema->{minItems} and $schema->{minItems} > @$data) {
-    push @errors, E $path, sprintf 'Not enough items: %s/%s.', int @$data, $schema->{minItems};
+    push @errors, E $path, sprintf 'Not enough items: %s/%s', int @$data, $schema->{minItems};
   }
   if (defined $schema->{maxItems} and $schema->{maxItems} < @$data) {
-    push @errors, E $path, sprintf 'Too many items: %s/%s.', int @$data, $schema->{maxItems};
+    push @errors, E $path, sprintf 'Too many items: %s/%s', int @$data, $schema->{maxItems};
   }
   if ($schema->{uniqueItems}) {
     my %uniq;
     for (@$data) {
       next if !$uniq{S($_)}++;
-      push @errors, E $path, 'Unique items required.';
+      push @errors, E $path, 'Unique items required';
       last;
     }
   }
@@ -462,7 +462,7 @@ sub _validate_type_array {
       }
     }
     elsif (!$additional_items) {
-      push @errors, E $path, sprintf "Invalid number of items: %s/%s.", int(@$data), int(@v);
+      push @errors, E $path, sprintf "Invalid number of items: %s/%s", int(@$data), int(@v);
     }
   }
   elsif (ref $schema->{items} eq 'HASH') {
@@ -497,13 +497,13 @@ sub _validate_type_integer {
 
   return @errors if @errors;
   return if $value =~ /^-?\d+$/;
-  return E $path, "Expected integer - got number.";
+  return E $path, "Expected integer - got number";
 }
 
 sub _validate_type_null {
   my ($self, $value, $path, $schema) = @_;
 
-  return E $path, 'Not null.' if defined $value;
+  return E $path, 'Not null' if defined $value;
   return;
 }
 
@@ -520,7 +520,7 @@ sub _validate_type_number {
     and 0 + $value eq $value
     and $value * 0 == 0)
   {
-    return E $path, "Expected $expected - got string."
+    return E $path, "Expected $expected - got string"
       if !$self->{coerce}{numbers} or $value !~ /^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/;
     $_[1] = 0 + $value;    # coerce input value
   }
@@ -536,7 +536,7 @@ sub _validate_type_number {
   }
   if (my $d = $schema->{multipleOf}) {
     if (($value / $d) =~ /\.[^0]+$/) {
-      push @errors, E $path, "Not multiple of $d.";
+      push @errors, E $path, "Not multiple of $d";
     }
   }
 
@@ -552,11 +552,11 @@ sub _validate_type_object {
     return E $path, _expected(object => $data);
   }
   if (defined $schema->{maxProperties} and $schema->{maxProperties} < keys %$data) {
-    push @errors, E $path, sprintf 'Too many properties: %s/%s.', int(keys %$data),
+    push @errors, E $path, sprintf 'Too many properties: %s/%s', int(keys %$data),
       $schema->{maxProperties};
   }
   if (defined $schema->{minProperties} and $schema->{minProperties} > keys %$data) {
-    push @errors, E $path, sprintf 'Not enough properties: %s/%s.', int(keys %$data),
+    push @errors, E $path, sprintf 'Not enough properties: %s/%s', int(keys %$data),
       $schema->{minProperties};
   }
 
@@ -580,13 +580,13 @@ sub _validate_type_object {
 
     if (my @keys = grep { !$rules{$_} } keys %$data) {
       local $" = ', ';
-      return E $path, "Properties not allowed: @keys.";
+      return E $path, "Properties not allowed: @keys";
     }
   }
 
   for my $k (keys %required) {
     next if exists $data->{$k};
-    push @errors, E _path($path, $k), 'Missing property.';
+    push @errors, E _path($path, $k), 'Missing property';
     delete $rules{$k};
   }
 
@@ -618,7 +618,7 @@ sub _validate_type_string {
     and 0 + $value eq $value
     and $value * 0 == 0)
   {
-    return E $path, "Expected string - got number." unless $self->{coerce}{strings};
+    return E $path, "Expected string - got number" unless $self->{coerce}{strings};
     $_[1] = "$value";    # coerce input value
   }
   if ($schema->{format}) {
@@ -626,13 +626,13 @@ sub _validate_type_string {
   }
   if (defined $schema->{maxLength}) {
     if (length($value) > $schema->{maxLength}) {
-      push @errors, E $path, sprintf "String is too long: %s/%s.", length($value),
+      push @errors, E $path, sprintf "String is too long: %s/%s", length($value),
         $schema->{maxLength};
     }
   }
   if (defined $schema->{minLength}) {
     if (length($value) < $schema->{minLength}) {
-      push @errors, E $path, sprintf "String is too short: %s/%s.", length($value),
+      push @errors, E $path, sprintf "String is too short: %s/%s", length($value),
         $schema->{minLength};
     }
   }
@@ -657,8 +657,8 @@ sub _cmp {
 
 sub _expected {
   my $type = _guess_data_type($_[1]);
-  return "Expected $_[0] - got different $type." if $_[0] =~ /\b$type\b/;
-  return "Expected $_[0] - got $type.";
+  return "Expected $_[0] - got different $type" if $_[0] =~ /\b$type\b/;
+  return "Expected $_[0] - got $type";
 }
 
 sub _guess_data_type {
@@ -756,7 +756,7 @@ sub _load_yaml {
 }
 
 sub _merge_errors {
-  join ' ', map {
+  join '. ', map {
     my $e = $_;
     (@$e == 1) ? $e->[0]{message} : sprintf '(%s)', join '. ', map { $_->{message} } @$e;
   } @_;

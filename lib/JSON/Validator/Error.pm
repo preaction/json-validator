@@ -2,7 +2,7 @@ package JSON::Validator::Error;
 use Mojo::Base -base;
 
 use overload
-  q("")    => sub { sprintf '%s: %s', @{$_[0]}{qw(path message)} },
+  q("")    => sub { sprintf '%s: %s.', @{$_[0]}{qw(path message)} },
   bool     => sub {1},
   fallback => 1;
 
