@@ -1,20 +1,45 @@
 package JSON::Validator::Error;
 use Mojo::Base -base;
+use List::Util qw( any );
 
 use overload
-  q("")    => sub { sprintf '%s: %s.', @{$_[0]}{qw(path message)} },
+  q("")    => sub { $_[0]->{path} . ': ' . $_[0]->{message} . ( $_[0]->{rule} ? " (wanted $_[0]->{rule})." : "." ) },
   bool     => sub {1},
   fallback => 1;
 
 sub new {
   my $self = bless {}, shift;
-  @$self{qw(path message)} = ($_[0] || '/', $_[1] || '');
+  @$self{qw(path message rule)} = ($_[0] || '/', $_[1] || '', $_[2] ? _rule_desc( $_[2] ) : '');
   $self;
 }
 
 sub message { shift->{message} }
 sub path    { shift->{path} }
-sub TO_JSON { {message => $_[0]->{message}, path => $_[0]->{path}} }
+sub rule    { shift->{rule} }
+sub _rule_desc {
+  my ( $rule ) = @_;
+  if ( ref $rule eq 'ARRAY' ) {
+    my $inner_rules = join( ', ', map { _rule_desc( $_ ) } @$rule );
+    return '' unless $inner_rules;
+    return '[' . $inner_rules . ']';
+  }
+  elsif ( $rule->{title} ) {
+    return '{' . $rule->{title} . '}';
+  }
+  elsif ( $rule->{properties}{'$ref'} ) {
+    return '{$REF}',
+  }
+  elsif ( $rule->{type} eq 'object' ) {
+    my %required = map { $_ => 1 } @{ $rule->{required} };
+    my @required = sort keys %required;
+    my @optional = sort grep { !$required{ $_ } } keys %{ $rule->{properties} };
+    return '' unless @required || @optional;
+    return 'Object[' . join( ", ", (map { "$_:" . ( $rule->{properties}{$_}{type} // "{ANY}" ) } @required ), map { "$_?:" . ( $rule->{properties}{$_}{type} // "{ANY}" ) } @optional ) . ']';
+  }
+  return;
+  return '{' . ucfirst $rule->{type} . '}';
+}
+sub TO_JSON { {message => $_[0]->{message}, path => $_[0]->{path}, rule => $_[0]->{rule}} }
 
 1;
 
@@ -47,6 +72,12 @@ A human readable description of the error. Defaults to empty string.
   $str = $self->path;
 
 A JSON pointer to where the error occurred. Defaults to "/".
+
+=head2 rule
+
+  $str = $self->rule;
+
+A description of the rule that we attempted to match. Defaults to empty string.
 
 =head1 METHODS
 

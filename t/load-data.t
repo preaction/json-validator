@@ -8,7 +8,7 @@ my @errors = $validator->schema('data://Some::Module/spec.json')->validate({firs
 is int(@errors), 1, 'one error';
 is $errors[0]->path,    '/lastName',         'lastName';
 is $errors[0]->message, 'Missing property', 'required';
-is_deeply $errors[0]->TO_JSON, {path => '/lastName', message => 'Missing property'}, 'TO_JSON';
+is_deeply $errors[0]->TO_JSON, {path => '/lastName', message => 'Missing property', rule => '{Example Schema}' }, 'TO_JSON';
 
 done_testing;
 

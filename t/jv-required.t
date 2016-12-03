@@ -17,7 +17,7 @@ is "@errors", "", "data1, schema1";
 is "@errors", "", "cannot have required on properties";
 
 @errors = validate_json $data2, $schema1;
-is "@errors", "/mynumber: Missing property.", "data2, schema1";
+is "@errors", "/mynumber: Missing property (wanted Object[mynumber:string]).", "data2, schema1";
 
 @errors = validate_json $data1, $schema2;
 is "@errors", "", "data1, schema2";

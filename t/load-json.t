@@ -10,7 +10,7 @@ my @errors    = $validator->validate({firstName => 'yikes!'});
 is int(@errors), 1, 'one error';
 is $errors[0]->path,    '/lastName',         'lastName';
 is $errors[0]->message, 'Missing property', 'required';
-is_deeply $errors[0]->TO_JSON, {path => '/lastName', message => 'Missing property'}, 'TO_JSON';
+is_deeply $errors[0]->TO_JSON, {path => '/lastName', message => 'Missing property', rule => '{Example Schema}' }, 'TO_JSON';
 
 my $spec = slurp $file;
 $spec =~ s!"#!"person.json#! or die "Invalid spec: $spec";

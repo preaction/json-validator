@@ -12,7 +12,9 @@ my @errors = $validator->validate({firstName => 'Jan Henning', lastName => 'Thor
 
 ok $INC{'YAML/Syck.pm'}, 'YAML::Syck is loaded';
 ok !$INC{'YAML/XS.pm'}, 'YAML::XS is not loaded';
-is "@errors", "/: Properties not allowed: age.", "additionalProperties: false";
+is "@errors",
+  "/: Properties not allowed: age (wanted Object[firstName:string, lastName:string]).",
+  "additionalProperties: false";
 
 done_testing;
 

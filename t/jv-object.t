@@ -48,7 +48,7 @@ my ($schema, @errors);
     = $validator->validate(
     {number => 1600, street_name => "Pennsylvania", street_type => "Avenue", direction => "NW"},
     $schema);
-  is "@errors", "/: Properties not allowed: direction.", "additionalProperties=0";
+  is "@errors", "/: Properties not allowed: direction (wanted Object[number?:number, street_name?:string, street_type?:string]).", "additionalProperties=0";
 
   $schema->{additionalProperties} = {type => "string"};
   @errors
@@ -61,7 +61,7 @@ my ($schema, @errors);
 {
   local $schema->{required} = ["number", "street_name"];
   @errors = $validator->validate({number => 1600, street_type => "Avenue"}, $schema);
-  is "@errors", "/street_name: Missing property.", "object with required";
+  is "@errors", "/street_name: Missing property (wanted Object[number:number, street_name:string, street_type?:string]).", "object with required";
 }
 
 {
