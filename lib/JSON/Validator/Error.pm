@@ -29,12 +29,14 @@ sub _rule_desc {
   elsif ( $rule->{properties}{'$ref'} ) {
     return '{$REF}',
   }
-  elsif ( $rule->{type} eq 'object' ) {
-    my %required = map { $_ => 1 } @{ $rule->{required} };
-    my @required = sort keys %required;
-    my @optional = sort grep { !$required{ $_ } } keys %{ $rule->{properties} };
-    return '' unless @required || @optional;
-    return 'Object[' . join( ", ", (map { "$_:" . ( $rule->{properties}{$_}{type} // "{ANY}" ) } @required ), map { "$_?:" . ( $rule->{properties}{$_}{type} // "{ANY}" ) } @optional ) . ']';
+  elsif ( $rule->{type} ) {
+    if ( $rule->{type} eq 'object' ) {
+      my %required = map { $_ => 1 } @{ $rule->{required} };
+      my @required = sort keys %required;
+      my @optional = sort grep { !$required{ $_ } } keys %{ $rule->{properties} };
+      return '' unless @required || @optional;
+      return 'Object[' . join( ", ", (map { "$_:" . ( $rule->{properties}{$_}{type} // "{ANY}" ) } @required ), map { "$_?:" . ( $rule->{properties}{$_}{type} // "{ANY}" ) } @optional ) . ']';
+    }
   }
   return;
   return '{' . ucfirst $rule->{type} . '}';
