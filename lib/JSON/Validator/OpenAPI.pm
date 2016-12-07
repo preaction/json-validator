@@ -112,7 +112,7 @@ sub validate_response {
     }
   }
   else {
-    push @errors, JSON::Validator::E('/' => "No responses rules defined for status $status.");
+    push @errors, JSON::Validator::E('/' => "No responses rules defined for status $status.", $schema);
   }
 
   return @errors;
@@ -228,7 +228,7 @@ sub _validate_type_file {
   my ($self, $data, $path, $schema) = @_;
 
   if ($schema->{required} and (not defined $data or not length $data)) {
-    return JSON::Validator::E($path => 'Missing property.');
+    return JSON::Validator::E($path => 'Missing property.', $schema);
   }
 
   return;
@@ -244,7 +244,7 @@ sub _validate_type_object {
 
   for my $p (keys %$properties) {
     next unless $properties->{$p}{readOnly};
-    push @e, JSON::Validator::E("$path/$p", "Read-only") if exists $data->{$p};
+    push @e, JSON::Validator::E("$path/$p", "Read-only", $schema) if exists $data->{$p};
     $ro{$p} = 1;
   }
 

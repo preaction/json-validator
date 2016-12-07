@@ -586,7 +586,7 @@ sub _validate_type_object {
 
   for my $k (keys %required) {
     next if exists $data->{$k};
-    push @errors, E _path($path, $k), 'Missing property', $schema;
+    push @errors, E _path($path, $k), sprintf( 'Missing property: %s', $k ), $schema;
     delete $rules{$k};
   }
 

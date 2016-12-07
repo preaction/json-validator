@@ -62,7 +62,7 @@ is "@errors", "/: Discriminator petType has no value.", "petType has no value";
 is "@errors", "/: No definition for discriminator Bat.", "no definition for discriminator";
 
 @errors = $openapi->validate_input({petType => 'Cat'}, $schema);
-is "@errors", "/huntingSkill: Missing property (wanted Object[huntingSkill:string]).", "missing property";
+is "@errors", "/huntingSkill: Missing property: huntingSkill (wanted Object[huntingSkill:string]).", "missing property";
 
 diag join ',', @errors;
 

@@ -61,7 +61,7 @@ my ($schema, @errors);
 {
   local $schema->{required} = ["number", "street_name"];
   @errors = $validator->validate({number => 1600, street_type => "Avenue"}, $schema);
-  is "@errors", "/street_name: Missing property (wanted Object[number:number, street_name:string, street_type?:string]).", "object with required";
+  is "@errors", "/street_name: Missing property: street_name (wanted Object[number:number, street_name:string, street_type?:string]).", "object with required";
 }
 
 {
